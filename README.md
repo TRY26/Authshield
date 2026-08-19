@@ -82,14 +82,13 @@ Start the FastAPI development server using `uvicorn`:
 uvicorn main:app --reload
 ```
 
-The API will be available at: `http://127.0.0.1:8000`
+The API will be available at your local host.
 
 ---
 
 ## 📖 API Endpoints
 
-Once the application is running, you can access the interactive Swagger documentation at:
-👉 **[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)**
+Once the application is running, you can access the interactive Swagger documentation at url of the local host.
 
 ### Summary of Endpoints
 
