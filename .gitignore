@@ -1,0 +1,23 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Environments
+venv/
+.venv/
+env/
+ENV/
+*.env
+
+# Databases and local runtime files
+*.db
+*.sqlite
+users.db
