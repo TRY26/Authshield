@@ -21,3 +21,4 @@ ENV/
 *.db
 *.sqlite
 users.db
+data/

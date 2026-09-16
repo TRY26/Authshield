@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AuthShield | CIAM & Security Playground</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    pre, code, .font-mono { font-family: 'JetBrains Mono', monospace; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
+
+  <!-- TOP NAVIGATION -->
+  <header class="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+        </div>
+        <div>
+          <span class="font-bold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-cyan-400 bg-clip-text text-transparent">AuthShield</span>
+          <span class="ml-2 text-xs px-2 py-0.5 rounded-full bg-cyan-950 border border-cyan-800 text-cyan-400 font-mono">v2.0 Production</span>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-4 text-xs font-mono">
+        <span class="hidden sm:inline-flex items-center text-emerald-400 bg-emerald-950/60 border border-emerald-800/60 px-2.5 py-1 rounded-md">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse mr-2"></span>
+          RTR Armed
+        </span>
+        <a href="/docs" target="_blank" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center space-x-1.5 transition">
+          <span>Swagger Docs</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- HERO / STATUS CARDS -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="bg-slate-900/50 border border-slate-800 rounded-xl p-4">
+        <div class="text-xs text-slate-400 font-mono uppercase tracking-wider">Protocol</div>
+        <div class="mt-1 text-sm font-semibold text-slate-100 flex items-center justify-between">
+          <span>OAuth2 / RFC 6749</span>
+          <span class="text-xs text-cyan-400 bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-800">RTR</span>
+        </div>
+      </div>
+      <div class="bg-slate-900/50 border border-slate-800 rounded-xl p-4">
+        <div class="text-xs text-slate-400 font-mono uppercase tracking-wider">Brute-Force Guard</div>
+        <div class="mt-1 text-sm font-semibold text-slate-100 flex items-center justify-between">
+          <span>SlowAPI Limiter</span>
+          <span class="text-xs text-amber-400 bg-amber-950/80 px-2 py-0.5 rounded border border-amber-800">5 req/min</span>
+        </div>
+      </div>
+      <div class="bg-slate-900/50 border border-slate-800 rounded-xl p-4">
+        <div class="text-xs text-slate-400 font-mono uppercase tracking-wider">Token Expiry</div>
+        <div class="mt-1 text-sm font-semibold text-slate-100 flex items-center justify-between">
+          <span>15m Access / 7d Refresh</span>
+          <span class="text-xs text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800">UTC</span>
+        </div>
+      </div>
+      <div class="bg-slate-900/50 border border-slate-800 rounded-xl p-4">
+        <div class="text-xs text-slate-400 font-mono uppercase tracking-wider">Database</div>
+        <div class="mt-1 text-sm font-semibold text-slate-100 flex items-center justify-between">
+          <span>MongoDB Atlas</span>
+          <span class="text-xs text-slate-300 bg-slate-800 px-2 py-0.5 rounded border border-slate-700">CIAM</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLAYGROUND WORKSPACE: LEFT (AUTH FORMS) + RIGHT (LIVE TOKEN & SECURITY LAB) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+      <!-- LEFT COLUMN: AUTH WORKFLOWS (5 Cols) -->
+      <div class="lg:col-span-5 space-y-6">
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-6 shadow-xl backdrop-blur">
+          <!-- TABS -->
+          <div class="flex space-x-2 border-b border-slate-800 pb-4 mb-6">
+            <button id="tab-login" onclick="switchTab('login')" class="flex-1 py-2 text-sm font-medium rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 transition">
+              Sign In
+            </button>
+            <button id="tab-signup" onclick="switchTab('signup')" class="flex-1 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-slate-200 transition">
+              Sign Up
+            </button>
+            <button id="tab-reset" onclick="switchTab('reset')" class="flex-1 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-slate-200 transition">
+              Reset
+            </button>
+          </div>
+
+          <!-- SIGN IN FORM -->
+          <div id="form-login" class="space-y-4">
+            <div>
+              <label class="block text-xs font-medium text-slate-400 mb-1.5">Email Address</label>
+              <input id="login-email" type="email" placeholder="user@example.com" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-cyan-500 transition" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-400 mb-1.5">Password</label>
+              <input id="login-password" type="password" placeholder="••••••••••••" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-cyan-500 transition" />
+            </div>
+            <button onclick="handleLogin()" class="w-full py-2.5 px-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-medium text-sm rounded-lg shadow-lg shadow-cyan-500/20 transition flex items-center justify-center space-x-2">
+              <span>Sign In & Issue Tokens</span>
+            </button>
+            <div class="text-xs text-slate-500 text-center">
+              Protected by 3-attempt account lockout & SlowAPI rate limiter.
+            </div>
+          </div>
+
+          <!-- SIGN UP FORM -->
+          <div id="form-signup" class="space-y-4 hidden">
+            <div>
+              <label class="block text-xs font-medium text-slate-400 mb-1.5">Email Address</label>
+              <input id="signup-email" type="email" placeholder="newuser@example.com" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-cyan-500 transition" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-400 mb-1.5">Password</label>
+              <input id="signup-password" oninput="checkPasswordStrength(this.value)" type="password" placeholder="••••••••••••" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-cyan-500 transition" />
+            </div>
+
+            <!-- PASSWORD COMPLEXITY CHECKLIST -->
+            <div class="bg-slate-950/80 border border-slate-800 rounded-lg p-3 space-y-1.5 text-xs font-mono">
+              <div class="text-slate-400 font-semibold mb-1">Production Security Rules:</div>
+              <div id="rule-len" class="text-slate-500 flex items-center space-x-1.5"><span>•</span><span>Minimum 8 characters</span></div>
+              <div id="rule-upper" class="text-slate-500 flex items-center space-x-1.5"><span>•</span><span>At least 1 uppercase letter</span></div>
+              <div id="rule-lower" class="text-slate-500 flex items-center space-x-1.5"><span>•</span><span>At least 1 lowercase letter</span></div>
+              <div id="rule-num" class="text-slate-500 flex items-center space-x-1.5"><span>•</span><span>At least 1 number</span></div>
+              <div id="rule-special" class="text-slate-500 flex items-center space-x-1.5"><span>•</span><span>At least 1 special character</span></div>
+            </div>
+
+            <button onclick="handleSignup()" class="w-full py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-100 font-medium text-sm rounded-lg border border-slate-700 transition">
+              Create Account
+            </button>
+          </div>
+
+          <!-- RESET FORM -->
+          <div id="form-reset" class="space-y-4 hidden">
+            <div>
+              <label class="block text-xs font-medium text-slate-400 mb-1.5">Account Email</label>
+              <div class="flex space-x-2">
+                <input id="reset-email" type="email" placeholder="user@example.com" class="flex-1 px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-cyan-500 transition" />
+                <button onclick="handleForgot()" class="px-3 py-2.5 bg-slate-800 hover:bg-slate-700 text-xs font-mono rounded-lg border border-slate-700">Get Token</button>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-400 mb-1.5">Reset Token (15m TTL)</label>
+              <input id="reset-token" type="text" placeholder="UUID reset token" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-sm font-mono text-xs focus:outline-none focus:border-cyan-500 transition" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-400 mb-1.5">New Password</label>
+              <input id="reset-new-password" type="password" placeholder="••••••••••••" class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-cyan-500 transition" />
+            </div>
+            <button onclick="handleReset()" class="w-full py-2.5 px-4 bg-emerald-600/90 hover:bg-emerald-500 text-white font-medium text-sm rounded-lg transition">
+              Confirm & Unlock Account
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: LIVE TOKEN & SECURITY LAB (7 Cols) -->
+      <div class="lg:col-span-7 space-y-6">
+
+        <!-- ACTIVE SESSION & TOKEN INSPECTOR -->
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-6 shadow-xl backdrop-blur space-y-6">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+            <div>
+              <h3 class="text-sm font-semibold text-slate-100 flex items-center space-x-2">
+                <span>Active Session State</span>
+                <span id="session-badge" class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-mono">No Session</span>
+              </h3>
+            </div>
+            <div id="session-actions" class="hidden flex items-center space-x-2">
+              <button onclick="handleLogout()" class="px-2.5 py-1 text-xs text-rose-400 hover:bg-rose-950/40 rounded border border-rose-900/60 transition">
+                Logout & Invalidate
+              </button>
+            </div>
+          </div>
+
+          <!-- ACCESS TOKEN CARD -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-400 font-mono">JWT Access Token (15m Expiry)</span>
+              <span id="token-expiry-label" class="font-mono text-cyan-400"></span>
+            </div>
+            <div id="access-token-box" class="bg-slate-950 border border-slate-800/80 rounded-xl p-3 font-mono text-xs text-slate-400 break-all max-h-24 overflow-y-auto">
+              Please sign in to inspect signed JWT payload.
+            </div>
+          </div>
+
+          <!-- REFRESH TOKEN CARD & RTR CONTROLS -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-400 font-mono">Active Refresh Token (RFC 6749)</span>
+              <span id="refresh-status-badge" class="font-mono text-slate-500">None</span>
+            </div>
+            <div id="refresh-token-box" class="bg-slate-950 border border-slate-800/80 rounded-xl p-3 font-mono text-xs text-slate-400 break-all">
+              None
+            </div>
+          </div>
+
+          <!-- INTERACTIVE SECURITY LAB ACTIONS -->
+          <div class="border-t border-slate-800/80 pt-5 space-y-3">
+            <div class="text-xs font-mono uppercase tracking-wider text-slate-400">Security Experiments & Verification</div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <!-- RTR BUTTON -->
+              <button onclick="handleRotateToken()" class="p-3 bg-slate-950 hover:bg-slate-800/80 border border-slate-800 rounded-xl text-left transition group">
+                <div class="text-xs font-semibold text-cyan-400 group-hover:text-cyan-300 flex items-center justify-between">
+                  <span>Rotate Token (RTR)</span>
+                  <span>🔄</span>
+                </div>
+                <div class="text-xs text-slate-400 mt-1">Calls /refresh: revokes current refresh token and generates fresh pair.</div>
+              </button>
+
+              <!-- TOKEN THEFT / REUSE SIMULATOR -->
+              <button onclick="simulateReuseAttack()" class="p-3 bg-slate-950 hover:bg-rose-950/20 border border-slate-800 hover:border-rose-900/60 rounded-xl text-left transition group">
+                <div class="text-xs font-semibold text-rose-400 group-hover:text-rose-300 flex items-center justify-between">
+                  <span>Simulate Token Theft</span>
+                  <span>🚨</span>
+                </div>
+                <div class="text-xs text-slate-400 mt-1">Attempts to replay an invalidated token to trigger security revocation.</div>
+              </button>
+
+              <!-- RATE LIMIT TESTER -->
+              <button onclick="testRateLimiter()" class="p-3 bg-slate-950 hover:bg-amber-950/20 border border-slate-800 hover:border-amber-900/60 rounded-xl text-left transition group">
+                <div class="text-xs font-semibold text-amber-400 group-hover:text-amber-300 flex items-center justify-between">
+                  <span>Test Rate Limiter</span>
+                  <span>⚡</span>
+                </div>
+                <div class="text-xs text-slate-400 mt-1">Fires rapid authentication requests to trigger HTTP 429 response.</div>
+              </button>
+
+              <!-- RBAC TESTER -->
+              <button onclick="handleFetchAdmin()" class="p-3 bg-slate-950 hover:bg-slate-800/80 border border-slate-800 rounded-xl text-left transition group">
+                <div class="text-xs font-semibold text-indigo-400 group-hover:text-indigo-300 flex items-center justify-between">
+                  <span>Test Admin RBAC</span>
+                  <span>🛡️</span>
+                </div>
+                <div class="text-xs text-slate-400 mt-1">Calls /admin/users to verify role permission boundaries.</div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- LIVE SECURITY AUDIT & API LOG CONSOLE -->
+    <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-6 shadow-xl backdrop-blur space-y-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <div class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></div>
+          <h4 class="text-xs font-mono uppercase tracking-wider text-slate-300">Live API Telemetry & Security Audit Log</h4>
+        </div>
+        <button onclick="clearLogs()" class="text-xs text-slate-500 hover:text-slate-300 font-mono">Clear Log</button>
+      </div>
+      <div id="console-log" class="bg-slate-950 border border-slate-800/80 rounded-xl p-4 font-mono text-xs text-slate-400 h-44 overflow-y-auto space-y-1.5">
+        <div class="text-slate-600">[System] AuthShield CIAM telemetry initialized. Waiting for actions...</div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    let currentTokens = {
+      accessToken: null,
+      refreshToken: null
+    };
+    let previousRevokedToken = null;
+
+    function logEvent(method, endpoint, statusCode, message, isError = false) {
+      const consoleEl = document.getElementById("console-log");
+      const time = new Date().toLocaleTimeString();
+      const color = statusCode >= 200 && statusCode < 300 
+        ? "text-emerald-400" 
+        : statusCode === 429 
+        ? "text-amber-400 font-bold" 
+        : isError 
+        ? "text-rose-400" 
+        : "text-cyan-400";
+
+      const div = document.createElement("div");
+      div.className = "flex items-start space-x-2";
+      div.innerHTML = `
+        <span class="text-slate-600">[${time}]</span>
+        <span class="text-slate-300 font-semibold">${method} ${endpoint}</span>
+        <span class="${color}">HTTP ${statusCode}</span>
+        <span class="text-slate-400">— ${message}</span>
+      `;
+      consoleEl.appendChild(div);
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+
+    function clearLogs() {
+      document.getElementById("console-log").innerHTML = '<div class="text-slate-600">[System] Logs cleared.</div>';
+    }
+
+    function switchTab(tab) {
+      ['login', 'signup', 'reset'].forEach(t => {
+        document.getElementById(`form-${t}`).classList.add('hidden');
+        document.getElementById(`tab-${t}`).className = 'flex-1 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-slate-200 transition';
+      });
+      document.getElementById(`form-${tab}`).classList.remove('hidden');
+      document.getElementById(`tab-${tab}`).className = 'flex-1 py-2 text-sm font-medium rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 transition';
+    }
+
+    function checkPasswordStrength(val) {
+      const setCheck = (id, valid) => {
+        const el = document.getElementById(id);
+        if (valid) {
+          el.className = "text-emerald-400 flex items-center space-x-1.5";
+          el.firstElementChild.innerText = "✓";
+        } else {
+          el.className = "text-slate-500 flex items-center space-x-1.5";
+          el.firstElementChild.innerText = "•";
+        }
+      };
+      setCheck("rule-len", val.length >= 8);
+      setCheck("rule-upper", /[A-Z]/.test(val));
+      setCheck("rule-lower", /[a-z]/.test(val));
+      setCheck("rule-num", /\d/.test(val));
+      setCheck("rule-special", /[!@#$%^&*(),.?":{}|<>\-_]/.test(val));
+    }
+
+    async function handleSignup() {
+      const email = document.getElementById("signup-email").value;
+      const password = document.getElementById("signup-password").value;
+      if (!email || !password) return alert("Please provide email and password.");
+
+      try {
+        const res = await fetch("/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          logEvent("POST", "/signup", res.status, "Account created successfully.");
+          alert("Registration successful! You can now sign in.");
+          document.getElementById("login-email").value = email;
+          document.getElementById("login-password").value = password;
+          switchTab('login');
+        } else {
+          logEvent("POST", "/signup", res.status, data.detail || "Signup failed", true);
+          alert(data.detail || "Signup failed.");
+        }
+      } catch (err) {
+        logEvent("POST", "/signup", 500, err.message, true);
+      }
+    }
+
+    async function handleLogin() {
+      const email = document.getElementById("login-email").value;
+      const password = document.getElementById("login-password").value;
+      if (!email || !password) return alert("Please enter email and password.");
+
+      try {
+        const res = await fetch("/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          currentTokens = {
+            accessToken: data.access_token,
+            refreshToken: data.refresh_token
+          };
+          updateSessionUI(email);
+          logEvent("POST", "/login", res.status, `Authenticated. Access + Refresh tokens generated.`);
+        } else {
+          logEvent("POST", "/login", res.status, data.detail || "Authentication failed", true);
+          alert(data.detail || "Authentication failed.");
+        }
+      } catch (err) {
+        logEvent("POST", "/login", 500, err.message, true);
+      }
+    }
+
+    function updateSessionUI(email) {
+      document.getElementById("session-badge").className = "text-xs px-2.5 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono";
+      document.getElementById("session-badge").innerText = email || "Authenticated";
+      document.getElementById("session-actions").classList.remove("hidden");
+
+      // Decode JWT
+      try {
+        const payload = JSON.parse(atob(currentTokens.accessToken.split('.')[1]));
+        document.getElementById("access-token-box").innerHTML = `
+          <div class="text-emerald-400 mb-1 font-semibold">Decoded Claims:</div>
+          <pre class="text-slate-300 text-xs">${JSON.stringify(payload, null, 2)}</pre>
+        `;
+      } catch (e) {
+        document.getElementById("access-token-box").innerText = currentTokens.accessToken;
+      }
+
+      document.getElementById("refresh-token-box").innerText = currentTokens.refreshToken;
+      document.getElementById("refresh-status-badge").className = "font-mono text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800";
+      document.getElementById("refresh-status-badge").innerText = "ACTIVE";
+    }
+
+    async function handleRotateToken() {
+      if (!currentTokens.refreshToken) return alert("Please sign in first to obtain a refresh token.");
+      previousRevokedToken = currentTokens.refreshToken;
+
+      try {
+        const res = await fetch("/refresh", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ refresh_token: currentTokens.refreshToken })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          currentTokens = {
+            accessToken: data.access_token,
+            refreshToken: data.refresh_token
+          };
+          updateSessionUI();
+          logEvent("POST", "/refresh", res.status, `RTR SUCCESS: Old token rotated & invalidated. Fresh pair issued.`);
+        } else {
+          logEvent("POST", "/refresh", res.status, data.detail || "Token rotation failed", true);
+          alert(data.detail || "Rotation failed.");
+        }
+      } catch (err) {
+        logEvent("POST", "/refresh", 500, err.message, true);
+      }
+    }
+
+    async function simulateReuseAttack() {
+      if (!previousRevokedToken) {
+        return alert("First click 'Rotate Token (RTR)' so we have a rotated/revoked token to simulate theft with!");
+      }
+
+      logEvent("ATTACK", "/refresh", 0, `Simulating token reuse with revoked token: ${previousRevokedToken.substring(0, 12)}...`);
+
+      try {
+        const res = await fetch("/refresh", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ refresh_token: previousRevokedToken })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          logEvent("POST", "/refresh", res.status, `SECURITY TRIGGERED: ${data.detail}`, true);
+          alert(`🚨 TOKEN REUSE DEFENSE TRIGGERED!\n\nAuthShield detected a replay attack with a revoked token.\nServer response: "${data.detail}"\n\nAll active tokens for this user have been purged.`);
+          handleClientResetSession();
+        } else {
+          logEvent("POST", "/refresh", res.status, "Warning: Token accepted (not expected for revoked token)");
+        }
+      } catch (err) {
+        logEvent("POST", "/refresh", 500, err.message, true);
+      }
+    }
+
+    async function testRateLimiter() {
+      logEvent("TEST", "/login", 0, "Initiating 6 rapid login bursts to test SlowAPI rate limiter (limit: 5/min)...");
+      for (let i = 1; i <= 6; i++) {
+        try {
+          const res = await fetch("/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: "ratetest@example.com", password: "wrongpassword123" })
+          });
+          const data = await res.json();
+          if (res.status === 429) {
+            logEvent("POST", "/login", res.status, `RATE LIMIT DEFENSE ENGAGED! Request #${i} rejected (429 Too Many Requests).`, false);
+            alert("🛡️ SLOWAPI RATE LIMIT ENGAGED!\n\nHTTP 429 Too Many Requests.\nBrute force / credential stuffing attempt successfully blocked!");
+            break;
+          } else {
+            logEvent("POST", "/login", res.status, `Request #${i}: ${data.detail || 'Handled'}`);
+          }
+        } catch (e) {
+          logEvent("POST", "/login", 500, e.message, true);
+        }
+      }
+    }
+
+    async function handleFetchAdmin() {
+      if (!currentTokens.accessToken) return alert("Please sign in first.");
+      try {
+        const res = await fetch("/admin/users", {
+          headers: { "Authorization": `Bearer ${currentTokens.accessToken}` }
+        });
+        const data = await res.json();
+        if (res.ok) {
+          logEvent("GET", "/admin/users", res.status, `Admin privileges verified: Loaded ${data.length} users.`);
+          alert(`RBAC Success: Admin access confirmed!\n\nLoaded ${data.length} users from database.`);
+        } else {
+          logEvent("GET", "/admin/users", res.status, `RBAC Guard: ${data.detail}`, true);
+          alert(`RBAC Guard Active: ${data.detail}\n(Standard user accounts cannot access admin endpoints)`);
+        }
+      } catch (err) {
+        logEvent("GET", "/admin/users", 500, err.message, true);
+      }
+    }
+
+    async function handleLogout() {
+      if (!currentTokens.accessToken) return;
+      try {
+        const res = await fetch("/logout", {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${currentTokens.accessToken}` }
+        });
+        const data = await res.json();
+        logEvent("POST", "/logout", res.status, "Access token blacklisted and session cleared.");
+      } catch (e) {}
+      handleClientResetSession();
+    }
+
+    function handleClientResetSession() {
+      currentTokens = { accessToken: null, refreshToken: null };
+      document.getElementById("session-badge").className = "text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-mono";
+      document.getElementById("session-badge").innerText = "No Session";
+      document.getElementById("session-actions").classList.add("hidden");
+      document.getElementById("access-token-box").innerText = "Please sign in to inspect signed JWT payload.";
+      document.getElementById("refresh-token-box").innerText = "None";
+      document.getElementById("refresh-status-badge").innerText = "None";
+      document.getElementById("refresh-status-badge").className = "font-mono text-slate-500";
+    }
+
+    async function handleForgot() {
+      const email = document.getElementById("reset-email").value;
+      if (!email) return alert("Please enter email.");
+      try {
+        const res = await fetch("/forgot", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          document.getElementById("reset-token").value = data.reset_token;
+          logEvent("POST", "/forgot", res.status, `Token generated with 15m TTL: ${data.reset_token.substring(0, 8)}...`);
+          alert(`Password recovery token generated!\nToken: ${data.reset_token}\n(Filled automatically into reset token input)`);
+        } else {
+          logEvent("POST", "/forgot", res.status, data.detail, true);
+          alert(data.detail);
+        }
+      } catch (err) {
+        logEvent("POST", "/forgot", 500, err.message, true);
+      }
+    }
+
+    async function handleReset() {
+      const token = document.getElementById("reset-token").value;
+      const new_password = document.getElementById("reset-new-password").value;
+      if (!token || !new_password) return alert("Please enter token and new password.");
+      try {
+        const res = await fetch("/reset", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token, new_password })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          logEvent("POST", "/reset", res.status, "Password updated and account unlocked.");
+          alert("Password updated successfully! You can now sign in.");
+          switchTab('login');
+        } else {
+          logEvent("POST", "/reset", res.status, data.detail, true);
+          alert(data.detail);
+        }
+      } catch (err) {
+        logEvent("POST", "/reset", 500, err.message, true);
+      }
+    }
+  </script>
+</body>
+</html>
