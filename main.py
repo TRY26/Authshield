@@ -10,6 +10,9 @@ import threading
 import time
 import os
 import uuid
+import logging
+
+logger = logging.getLogger("authshield")
 
 # Rate limiting
 try:
@@ -72,6 +75,15 @@ app = FastAPI(
     description="Enterprise-grade CIAM authentication service with Refresh Token Rotation (RTR), Rate Limiting, and Automated Reuse Detection.",
     version="2.0.0"
 )
+
+# Global Exception Handler for transparent error debugging
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.error(f"Unhandled error on {request.method} {request.url.path}: {exc}", exc_info=True)
+    return JSONResponse(
+        status_code=500,
+        content={"detail": str(exc), "error_type": type(exc).__name__}
+    )
 
 # CORS configuration
 app.add_middleware(
